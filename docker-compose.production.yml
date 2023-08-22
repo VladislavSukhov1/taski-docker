@@ -1,0 +1,31 @@
+version: '3'
+
+volumes:
+  pg_data_production:
+  static:
+
+# Всё отличие — заменяем build на image и указываем, какой образ использовать
+services:
+  db:
+    image: postgres:13.10
+    env_file: .env
+    volumes:
+      - pg_data_production:/var/lib/postgresql/data
+  backend:
+    image: spacekid/taski_backend1
+    env_file: .env
+    volumes:
+      - static:/backend_static
+  frontend:
+    image: spacekid/taski_frontend  # Качаем с Docker Hub
+    env_file: .env
+    command: cp -r /app/build/. /frontend_static/
+    volumes:
+      - static:/frontend_static
+  gateway:
+    image: spacekid/taski_gateway  # Качаем с Docker Hub
+    env_file: .env
+    volumes:
+      - static:/staticfiles/
+    ports:
+      - 8000:80 
